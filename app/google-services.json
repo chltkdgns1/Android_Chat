@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "333212619118",
+    "firebase_url": "https://kaokao-f06ed.firebaseio.com",
+    "project_id": "kaokao-f06ed",
+    "storage_bucket": "kaokao-f06ed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:333212619118:android:45cc809b6a7c9fb612f17f",
+        "android_client_info": {
+          "package_name": "com.gkftndltek.chatingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "333212619118-34f2rlamumdv2hg6kk0uud8helk5o214.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA03wC94KEAu9KQjV9tD0QCbeciQ7swsxg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "333212619118-34f2rlamumdv2hg6kk0uud8helk5o214.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:333212619118:android:ab0291016848479612f17f",
+        "android_client_info": {
+          "package_name": "com.gkftndltek.kaokao"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "333212619118-34f2rlamumdv2hg6kk0uud8helk5o214.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA03wC94KEAu9KQjV9tD0QCbeciQ7swsxg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "333212619118-34f2rlamumdv2hg6kk0uud8helk5o214.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

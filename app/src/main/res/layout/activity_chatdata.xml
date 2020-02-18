@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+        <LinearLayout
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/LinearLayout_chatLinear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp"
+                >
+                <ImageView
+                    android:id="@+id/LinearLayout_profile"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/profilepicture_first"/>
+
+                <LinearLayout
+                    android:id="@+id/LinearLayout_chatLinear_in"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                            >
+                        <TextView
+                            android:id="@+id/LinearLayout_chatname"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="name"
+                            android:textSize="10dp"
+                            />
+
+                        <LinearLayout
+                            android:id="@+id/LinearLayout_bubble"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="5dp"
+                            android:gravity="left"
+                            android:weightSum="1"
+                            >
+                                        <!--
+                                android:layout_gravity="center"
+                                android:layout_margin="5dp" -->
+                                <TextView
+                                    android:id="@+id/TextView_time_start"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="5dp"
+                                    android:gravity="bottom"
+                                    android:text="time"
+                                    />
+
+                                <TextView
+                                    android:id="@+id/LinearLayout_chatmsg"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="14dp"
+                                    android:background="@drawable/bubble_yellow"
+                                    android:paddingLeft="10dp"
+                                    android:layout_weight="0.7"
+                                    android:text=""
+                                    android:textColor="@android:color/primary_text_light" />
+
+                                <TextView
+                                    android:id="@+id/TextView_time_end"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="5dp"
+                                    android:gravity="bottom"
+                                    android:text="time"
+                                    />
+
+                        </LinearLayout>
+
+                </LinearLayout>
+
+        </LinearLayout>
+</LinearLayout>
