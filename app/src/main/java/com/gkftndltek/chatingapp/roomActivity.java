@@ -7,11 +7,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,36 +23,31 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class chatActivity extends AppCompatActivity {
+public class roomActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    private  List<chatdata> chatdataset;
+    private  List<roomData> roomdataset;
 
-    private SoundPool sp;
-    private int soundid;
-    private AudioManager am;
+    //private SoundPool sp;
+    //private int soundid;
+    //private AudioManager am;
 
     private Date mDate;
     private long now_time;
     private SimpleDateFormat simpleDate;
 
     private DatabaseReference myRef,myUser;
-    private EditText EditText_chat;
     //private Button Button_send;
-    private ImageView ImageView_send;
-    private Userdata userData;
-    private chatdata data;
+    //private ImageView ImageView_send;
+
+    //private Userdata userData;
 
     private List<String> list;
     private DatabaseReference isToken;
@@ -63,23 +55,24 @@ public class chatActivity extends AppCompatActivity {
 
     private FushMessage fushMessage;
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
 
-        Intent it = getIntent();
-        Bundle bun = it.getExtras();
-        userData = (Userdata) bun.get("data");
+        //Intent it = getIntent();
+        //Bundle bun = it.getExtras();
+        //userData = (Userdata) bun.get("data");
 
         database = FirebaseDatabase.getInstance();
         myUser =database.getReference("users");
         myRef = database.getReference("message");
 
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-        //Button_send = findViewById(R.id.Button_send);
-        EditText_chat = findViewById(R.id.EditText_chat);
-        ImageView_send = findViewById(R.id.ImageView_send);
+
+        //ImageView_send = findViewById(R.id.ImageView_send);
+
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
@@ -91,34 +84,21 @@ public class chatActivity extends AppCompatActivity {
         mDate = new Date();
         simpleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-        chatdataset = new ArrayList<>();
-        mAdapter = new chatAdapter(chatdataset,chatActivity.this, userData.getUsername());
+        roomdataset = new ArrayList<>();
+        mAdapter = new roomAdapter(roomdataset,roomActivity.this);
         recyclerView.setAdapter(mAdapter);
 
-        sp = new SoundPool(5,AudioManager.STREAM_MUSIC,0);
-        soundid = sp.load(this,R.raw.kaotalk,1);
+       // sp = new SoundPool(5,AudioManager.STREAM_MUSIC,0);
+       // soundid = sp.load(this,R.raw.kaotalk,1);
 
         fushMessage = new FushMessage();
-
         isToken = database.getReference("Tokens"); // 토큰들의 집합
 
-        getChat(); // 맨 처음에 그냥 대회 내용을 가져옴
+       // getChat(); // 맨 처음에 그냥 대회 내용을 가져옴
 
-        EditText_chat.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            recyclerView.scrollToPosition(mAdapter.getItemCount()-1);
-                        }
-                    }, 200);
-                }
-                return false;
-            }
-        });
 
+
+        /*
         ImageView_send.setClickable(true);
         ImageView_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,7 +115,7 @@ public class chatActivity extends AppCompatActivity {
                     EditText_chat.setText("");
 
 
-                    /*
+
                     isToken.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -150,7 +130,7 @@ public class chatActivity extends AppCompatActivity {
 
                         }
                     });
-*/
+
 
                     isToken.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -184,8 +164,10 @@ public class chatActivity extends AppCompatActivity {
                 }
             }
         });
+         */
     }
 
+    /*
     public void getChat() {
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -221,4 +203,5 @@ public class chatActivity extends AppCompatActivity {
             }
         });
     }
+     */
 }
