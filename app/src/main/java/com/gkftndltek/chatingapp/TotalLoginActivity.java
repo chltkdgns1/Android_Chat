@@ -114,17 +114,17 @@ public class TotalLoginActivity extends AppCompatActivity {
                 }
             });
         }
-        else {
             setContentView(R.layout.activity_total_login);
 
-            /*
+
             gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.default_web_client_id))
                     .requestEmail()
                     .build();
             // 구글 로그인 준비
+
             goolgleStart();
-             */
+
 
             loginButton = (LoginButton) findViewById(R.id.login_button);
             loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
@@ -238,10 +238,9 @@ public class TotalLoginActivity extends AppCompatActivity {
             });
 
              */
-        }
     }
 
-    /*
+
     private void goolgleStart(){
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         findViewById(R.id.signInButton).setOnClickListener(new View.OnClickListener() {
@@ -266,12 +265,25 @@ public class TotalLoginActivity extends AppCompatActivity {
         });
     }
 
-     */
-
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Toast.makeText(getApplicationContext(),"실행됨",Toast.LENGTH_LONG).show();
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+                Toast.makeText(getApplicationContext(),"Google sign in success",Toast.LENGTH_LONG).show();
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Toast.makeText(getApplicationContext(),"Google sign in failed",Toast.LENGTH_LONG).show();
+                updateUI(null);
+                // ...
+            }
+        }
     }
 
     /*
@@ -294,6 +306,7 @@ public class TotalLoginActivity extends AppCompatActivity {
             }
         }
     }
+    */
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
@@ -362,7 +375,6 @@ public class TotalLoginActivity extends AppCompatActivity {
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.GONE);
         }
     }
-*/
 
     private void handleFacebookAccessToken(AccessToken token) {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
