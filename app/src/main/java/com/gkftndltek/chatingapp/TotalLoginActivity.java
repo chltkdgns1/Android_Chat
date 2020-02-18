@@ -40,12 +40,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.util.Arrays;
 
 public class TotalLoginActivity extends AppCompatActivity {
 
-    private  CallbackManager mCallbackManager;
-    private  FirebaseAuth mAuth;
+    private CallbackManager mCallbackManager;
+    private FirebaseAuth mAuth;
 
     // private TextInputEditText TextInputEdit_id,TextInputEdit_pass; // 아이디 비밀번호
     //private TextView TextView_signup; // 회원가입
@@ -53,7 +54,7 @@ public class TotalLoginActivity extends AppCompatActivity {
 
     private LoginButton loginButton; // 페이스북에서 제공하는 로그인 버트
 
-    private DatabaseReference myRef,getUsers,isToken;
+    private DatabaseReference myRef, getUsers, isToken;
     // 여기서 getUsers 는 주요 로그인 외의 uid 를 저장하는 수를 가져오기 위해 사용됨
     // 세번째 isToken 은 토큰이 존재하는지 확인하고 존재하지 않는다면 추가하는 기능
 
@@ -94,9 +95,7 @@ public class TotalLoginActivity extends AppCompatActivity {
         // 단, 이 부분도 룸이 생길 경우에 삭제해야한다.
 
         // 토큰이 존재하는지 확인하고 없다면 추가한다.
-
-
-        if(user != null){ // 로그인이 되있는 상태라면 바로 메시지 창으로 넘아감
+        if (user != null) { // 로그인이 되있는 상태라면 바로 메시지 창으로 넘아감
             final String uid = user.getUid(); // 접속했었던 유아이를 가져옴
             myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -104,16 +103,19 @@ public class TotalLoginActivity extends AppCompatActivity {
                     Userdata data = dataSnapshot.getValue(Userdata.class);
                     data.setToken(tokens); // 새로 받은 토큰을 갱신해주고
                     Intent intent = new Intent(TotalLoginActivity.this, chatActivity.class);
-                    intent.putExtra("data",data);
+                    intent.putExtra("data", data);
                     myRef.child(uid).setValue(data);  // 갱신한 토큰을 디비에 올려줌
                     startActivity(intent);
                 }
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
             });
         }
+
+        else {
             setContentView(R.layout.activity_total_login);
 
 
@@ -124,7 +126,6 @@ public class TotalLoginActivity extends AppCompatActivity {
             // 구글 로그인 준비
 
             goolgleStart();
-
 
             loginButton = (LoginButton) findViewById(R.id.login_button);
             loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
@@ -145,104 +146,12 @@ public class TotalLoginActivity extends AppCompatActivity {
                     Log.d("설마여기임?", "2");
                 }
             });
-
-            // 구글 로그인 준비
-            // 그게 아니라면 로그인 회원가입을 거쳐야함
-
-            /*           -------------------- 자체 로그인 코드 -----------------------
-            TextView_signup = findViewById((R.id.TextView_signup)); //회원가입
-            TextInputEdit_id = findViewById(R.id.TextInputEdit_id); // 아이디
-            TextInputEdit_pass = findViewById(R.id.TextInputEdit_pass); // 비밀번호
-            TextInputEdit_pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD); // 비밀번호 표시
-
-            LinearLayout_Button1 = findViewById(R.id.LinearLayout_Button1); // 로그인
-            LinearLayout_Button1.setClickable(true);
-
-            자체 로그인 부분 제거한 상태
-             */
-
-
-            /*
-            TextView_signup.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent it = new Intent(TotalLoginActivity.this, signUpActivity.class);
-                    startActivity(it);
-                }
-            });
-
-            LinearLayout_Button1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String id = TextInputEdit_id.getText().toString();
-                    String pass = TextInputEdit_pass.getText().toString();
-
-                    if (!id.isEmpty() && !pass.isEmpty()) {
-                        //Userdata user = new Userdata(id,pass);
-                        // 아이디 비밀번호가 디비에 있는지 확인 후에 로그인 가능하게 함
-
-                        getUsers = database.getReference("otheruid");
-                        // 주요 로그인이 아닌 로그인을 할 경우에 해당 uid 를 얻기 위해서 사용
-                        // otheruid 아래에 바로 가져오는 것이기 때문에 바로 받아옴
-
-                        getUsers.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                userCount = dataSnapshot.getValue(UserCount.class);
-                                // 주요 로그인 외의 uid 를 저장하는 변수
-                                // 현재 받아온 userCount 는 사용할 수 있는
-
-                                if(userCount == null){ // 제일 처음 사용
-                                    userCount = new UserCount();
-                                    userCount.setUserCnt(1);
-                                }
-                                else{
-                                    userCount.setUserCnt(userCount.getUserCnt() + 1);
-                                    // 한명 증가
-                                }
-                                getUsers.setValue(userCount); // uid 를 디비에 갱신
-
-                                final String uid = Integer.toString(userCount.getUserCnt());
-                                // 여기서 현재 받아온 uid 가 users pid 에 존재하는지 확인
-                                myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        Userdata data = dataSnapshot.getValue(Userdata.class);
-                                        if(data == null) { // 새로운 uid 계정을 만들어야함
-                                            Intent intent = new Intent(TotalLoginActivity.this, getNickName.class);
-                                            intent.putExtra("uid", uid);
-                                            intent.putExtra("token",tokens);
-                                            startActivity(intent);
-                                        }
-                                        else{
-                                            Intent intent = new Intent(TotalLoginActivity.this, chatActivity.class);
-                                            intent.putExtra("data",data);
-                                            startActivity(intent);
-                                        }
-                                    }
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                    } else
-                        Toast.makeText(getApplicationContext(), "Input id or pass", Toast.LENGTH_LONG).show();
-                }
-            });
-
-             */
+        }
     }
 
 
-    private void goolgleStart(){
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    private void goolgleStart() {
+               mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         findViewById(R.id.signInButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -266,7 +175,7 @@ public class TotalLoginActivity extends AppCompatActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Toast.makeText(getApplicationContext(),"실행됨",Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "실행됨", Toast.LENGTH_LONG).show();
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -276,42 +185,18 @@ public class TotalLoginActivity extends AppCompatActivity {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
-                Toast.makeText(getApplicationContext(),"Google sign in success",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Google sign in success", Toast.LENGTH_LONG).show();
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Toast.makeText(getApplicationContext(),"Google sign in failed",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Google sign in failed", Toast.LENGTH_LONG).show();
                 updateUI(null);
                 // ...
             }
         }
     }
-
-    /*
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-                Toast.makeText(getApplicationContext(),"Google sign in success",Toast.LENGTH_LONG).show();
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Toast.makeText(getApplicationContext(),"Google sign in failed",Toast.LENGTH_LONG).show();
-                updateUI(null);
-                // ...
-            }
-        }
-    }
-    */
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-        // [START_EXCLUDE silent]
-        // [END_EXCLUDE]
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -320,12 +205,38 @@ public class TotalLoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Toast.makeText(getApplicationContext(),"signInWithCredential:success",Toast.LENGTH_LONG).show();
+                           // Toast.makeText(getApplicationContext(), "signInWithCredential:success", Toast.LENGTH_LONG).show();
+
                             FirebaseUser user = mAuth.getCurrentUser();
+                            final String uid = user.getUid();
+
+                            myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    Userdata data = dataSnapshot.getValue(Userdata.class);
+                                    if (data == null) { // 새로운 uid 계정을 만들어야함
+                                        Intent intent = new Intent(TotalLoginActivity.this, getNickName.class);
+                                        intent.putExtra("uid", uid);
+                                        intent.putExtra("token", tokens);
+                                        startActivity(intent);
+                                    } else {
+                                        Intent intent = new Intent(TotalLoginActivity.this, chatActivity.class);
+                                        intent.putExtra("data", data);
+                                        startActivity(intent);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(getApplicationContext(),"signInWithCredential:failure",Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getApplicationContext(), "signInWithCredential:failure", Toast.LENGTH_LONG).show();
+
                             updateUI(null);
                         }
                     }
@@ -398,18 +309,18 @@ public class TotalLoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     Userdata data = dataSnapshot.getValue(Userdata.class);
-                                    if(data == null) { // 새로운 uid 계정을 만들어야함
+                                    if (data == null) { // 새로운 uid 계정을 만들어야함
                                         Intent intent = new Intent(TotalLoginActivity.this, getNickName.class);
                                         intent.putExtra("uid", uid);
-                                        intent.putExtra("token",tokens);
+                                        intent.putExtra("token", tokens);
                                         startActivity(intent);
-                                    }
-                                    else{
+                                    } else {
                                         Intent intent = new Intent(TotalLoginActivity.this, chatActivity.class);
-                                        intent.putExtra("data",data);
+                                        intent.putExtra("data", data);
                                         startActivity(intent);
                                     }
                                 }
+
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -429,8 +340,8 @@ public class TotalLoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void inputToken(){
-        if(tokens != null) {
+    private void inputToken() {
+        if (tokens != null) {
             isToken.child(tokens).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -452,28 +363,6 @@ public class TotalLoginActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-       // updateUI(currentUser);
+        updateUI(currentUser);
     }
-
-
-
-
-
-
-        /*
-    public void requestMe(AccessToken token) {
-        GraphRequest graphRequest = GraphRequest.newMeRequest(token,
-                new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject object, GraphResponse response) {
-                        Log.e("result",object.toString());
-                    }
-                });
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,email,gender,birthday");
-        graphRequest.setParameters(parameters);
-        graphRequest.executeAsync();
-    }
-
-     */
 }

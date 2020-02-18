@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,7 +9,6 @@
     android:paddingRight="16dp"
     >
 
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,82 +16,8 @@
         android:textColor="@android:color/holo_blue_dark"
         android:layout_marginBottom="16dp"
         android:textSize="20dp"
+        android:layout_marginTop="150dp"
         android:text="LOGIN"></TextView>
-
-    <!--
-<ImageView
-    android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:gravity="center"
-    android:layout_marginBottom="16dp"
-    android:src="@drawable/iconfinder_prsen_box"></ImageView>
-    -->
-
-
-    <!--
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        >
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Email or ID"
-            android:id="@+id/TextInputEdit_id"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        >
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Password"
-            android:id="@+id/TextInputEdit_pass"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <LinearLayout
-        android:id="@+id/LinearLayout_Button1"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:orientation="horizontal"
-        android:background="@drawable/button_back_col_dblue"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:layout_marginBottom="16dp"
-        android:weightSum="10"
-        >
-
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:background="@null"
-            android:src="@drawable/iconfinder_contacts"></ImageView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:text="Log in"
-            android:textColor="#ffffff"
-            android:layout_marginBottom="16dp"
-            android:gravity="center"
-            android:layout_weight="9"
-            />
-    </LinearLayout>
-
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="OR"></TextView>
- -->
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button"
@@ -139,36 +63,5 @@
             android:text="@string/disconnect"
             android:theme="@style/ThemeOverlay.MyDarkButton" />
     </LinearLayout>
-    <!--
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="10"
-        >
 
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_weight="5"
-            android:textSize="24sp"
-            android:textColor="@android:color/holo_blue_dark"
-            android:text="Find Password"></TextView>
-
-        <TextView
-            android:id="@+id/TextView_signup"
-            android:clickable="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_weight="5"
-            android:textSize="24sp"
-            android:textColor="@android:color/holo_orange_dark"
-            android:text="Sign up"></TextView>
-
-
-    </LinearLayout>
-        -->
 </LinearLayout>

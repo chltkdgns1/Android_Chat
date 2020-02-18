@@ -180,8 +180,6 @@ public class chatActivity extends AppCompatActivity {
 
                         }
                     });
-
-
                 }
             }
         });
