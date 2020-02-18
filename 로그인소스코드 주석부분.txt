@@ -1,0 +1,104 @@
+ ----------------------------------------------
+
+// 로그인 입력 변수들
+
+    // private TextInputEditText TextInputEdit_id,TextInputEdit_pass; // 아이디 비밀번호
+    //private TextView TextView_signup; // 회원가입
+    //private LinearLayout LinearLayout_Button1; // 로그인 장식임(사용 설명서)
+
+
+----------------------------------------------
+// 로그인 입력 에딧텍스트랑 그것 처리하는 부분 주석처리 
+
+ // 구글 로그인 준비
+            // 그게 아니라면 로그인 회원가입을 거쳐야함
+
+            /*           -------------------- 자체 로그인 코드 -----------------------
+            TextView_signup = findViewById((R.id.TextView_signup)); //회원가입
+            TextInputEdit_id = findViewById(R.id.TextInputEdit_id); // 아이디
+            TextInputEdit_pass = findViewById(R.id.TextInputEdit_pass); // 비밀번호
+            TextInputEdit_pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD); // 비밀번호 표시
+
+            LinearLayout_Button1 = findViewById(R.id.LinearLayout_Button1); // 로그인
+            LinearLayout_Button1.setClickable(true);
+
+            자체 로그인 부분 제거한 상태
+             */
+
+
+            /*
+            TextView_signup.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent it = new Intent(TotalLoginActivity.this, signUpActivity.class);
+                    startActivity(it);
+                }
+            });
+
+            LinearLayout_Button1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String id = TextInputEdit_id.getText().toString();
+                    String pass = TextInputEdit_pass.getText().toString();
+
+                    if (!id.isEmpty() && !pass.isEmpty()) {
+                        //Userdata user = new Userdata(id,pass);
+                        // 아이디 비밀번호가 디비에 있는지 확인 후에 로그인 가능하게 함
+
+                        getUsers = database.getReference("otheruid");
+                        // 주요 로그인이 아닌 로그인을 할 경우에 해당 uid 를 얻기 위해서 사용
+                        // otheruid 아래에 바로 가져오는 것이기 때문에 바로 받아옴
+
+                        getUsers.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                userCount = dataSnapshot.getValue(UserCount.class);
+                                // 주요 로그인 외의 uid 를 저장하는 변수
+                                // 현재 받아온 userCount 는 사용할 수 있는
+
+                                if(userCount == null){ // 제일 처음 사용
+                                    userCount = new UserCount();
+                                    userCount.setUserCnt(1);
+                                }
+                                else{
+                                    userCount.setUserCnt(userCount.getUserCnt() + 1);
+                                    // 한명 증가
+                                }
+                                getUsers.setValue(userCount); // uid 를 디비에 갱신
+
+                                final String uid = Integer.toString(userCount.getUserCnt());
+                                // 여기서 현재 받아온 uid 가 users pid 에 존재하는지 확인
+                                myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        Userdata data = dataSnapshot.getValue(Userdata.class);
+                                        if(data == null) { // 새로운 uid 계정을 만들어야함
+                                            Intent intent = new Intent(TotalLoginActivity.this, getNickName.class);
+                                            intent.putExtra("uid", uid);
+                                            intent.putExtra("token",tokens);
+                                            startActivity(intent);
+                                        }
+                                        else{
+                                            Intent intent = new Intent(TotalLoginActivity.this, chatActivity.class);
+                                            intent.putExtra("data",data);
+                                            startActivity(intent);
+                                        }
+                                    }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    } else
+                        Toast.makeText(getApplicationContext(), "Input id or pass", Toast.LENGTH_LONG).show();
+                }
+            });
+
+             */
