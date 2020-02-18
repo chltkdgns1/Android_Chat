@@ -1,5 +1,6 @@
 package com.gkftndltek.chatingapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,6 +46,9 @@ import java.util.Arrays;
 
 public class TotalLoginActivity extends AppCompatActivity {
 
+
+    public static Activity TotalLog;
+
     private CallbackManager mCallbackManager;
     private FirebaseAuth mAuth;
 
@@ -76,6 +80,8 @@ public class TotalLoginActivity extends AppCompatActivity {
         //AccessToken accessToken = AccessToken.getCurrentAccessToken();
         //boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
+        TotalLog = TotalLoginActivity.this;
+
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         mCallbackManager = CallbackManager.Factory.create();
@@ -86,7 +92,8 @@ public class TotalLoginActivity extends AppCompatActivity {
         isToken = database.getReference("Tokens"); // 토큰들의 집합
 
         tokens = FirebaseInstanceId.getInstance().getToken();
-        inputToken();
+
+        //inputToken();
 
         // 현재 기기의 토큰을 가져옴
 
@@ -95,63 +102,73 @@ public class TotalLoginActivity extends AppCompatActivity {
         // 단, 이 부분도 룸이 생길 경우에 삭제해야한다.
 
         // 토큰이 존재하는지 확인하고 없다면 추가한다.
+
         if (user != null) { // 로그인이 되있는 상태라면 바로 메시지 창으로 넘아감
             final String uid = user.getUid(); // 접속했었던 유아이를 가져옴
-            myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Userdata data = dataSnapshot.getValue(Userdata.class);
-                    data.setToken(tokens); // 새로 받은 토큰을 갱신해주고
-                    Intent intent = new Intent(TotalLoginActivity.this, chatActivity.class);
-                    intent.putExtra("data", data);
-                    myRef.child(uid).setValue(data);  // 갱신한 토큰을 디비에 올려줌
-                    startActivity(intent);
-                }
+            if (uid != null) {
+                myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Userdata data = dataSnapshot.getValue(Userdata.class);
+                        if (data != null) {
+                            data.setToken(tokens); // 새로 받은 토큰을 갱신해주고
+                            Intent intent = new Intent(TotalLoginActivity.this, chatActivity.class);
+                            intent.putExtra("data", data);
+                            myRef.child(uid).setValue(data);  // 갱신한 토큰을 디비에 올려줌
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            LayoutStart();
+                            Intent intent = new Intent(TotalLoginActivity.this, getNickName.class);
+                            intent.putExtra("uid", uid);
+                            intent.putExtra("token", tokens);
+                            startActivity(intent);
+                        }
+                    }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                }
-            });
+                    }
+                });
+            }
         }
-
-        else {
-            setContentView(R.layout.activity_total_login);
-
-
-            gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.default_web_client_id))
-                    .requestEmail()
-                    .build();
-            // 구글 로그인 준비
-
-            goolgleStart();
-
-            loginButton = (LoginButton) findViewById(R.id.login_button);
-            loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
-
-            loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-                @Override
-                public void onSuccess(LoginResult loginResult) {
-                    handleFacebookAccessToken(loginResult.getAccessToken());
-                }
-
-                @Override
-                public void onCancel() {
-                    Log.d("설마여기임?", "1");
-                }
-
-                @Override
-                public void onError(FacebookException error) {
-                    Log.d("설마여기임?", "2");
-                }
-            });
-        }
+        else LayoutStart();
     }
 
+    private void LayoutStart(){
+        setContentView(R.layout.activity_total_login);
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        // 구글 로그인 준비
+
+        goolgleStart();
+
+        loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
+
+        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d("설마여기임?", "1");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d("설마여기임?", "2");
+            }
+        });
+    }
 
     private void goolgleStart() {
-               mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         findViewById(R.id.signInButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -175,7 +192,6 @@ public class TotalLoginActivity extends AppCompatActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Toast.makeText(getApplicationContext(), "실행됨", Toast.LENGTH_LONG).show();
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -189,7 +205,6 @@ public class TotalLoginActivity extends AppCompatActivity {
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Toast.makeText(getApplicationContext(), "Google sign in failed", Toast.LENGTH_LONG).show();
-                updateUI(null);
                 // ...
             }
         }
@@ -205,7 +220,7 @@ public class TotalLoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                           // Toast.makeText(getApplicationContext(), "signInWithCredential:success", Toast.LENGTH_LONG).show();
+                            // Toast.makeText(getApplicationContext(), "signInWithCredential:success", Toast.LENGTH_LONG).show();
 
                             FirebaseUser user = mAuth.getCurrentUser();
                             final String uid = user.getUid();
@@ -326,43 +341,10 @@ public class TotalLoginActivity extends AppCompatActivity {
 
                                 }
                             });
-
-
-                            //userdata.setRoom("room");
-                            //userdata.setUsername(user.getEmail());
-
-                            //myRef.child(uid).child("room").push().setValue("2");
                         } else {
-                            //Toast.makeText(getApplicationContext(),"실패",Toast.LENGTH_LONG).show();
-                            // If sign in fails, display a message to the user.
+
                         }
                     }
                 });
-    }
-
-    private void inputToken() {
-        if (tokens != null) {
-            isToken.child(tokens).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    String tk = dataSnapshot.getValue(String.class);
-                    if (tk == null) {
-                        isToken.child(tokens).setValue("1");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
     }
 }

@@ -44,6 +44,8 @@ public class getNickName extends AppCompatActivity {
     private FirebaseDatabase database;
     private LinearLayout LinearLayout_signup_complete;
     private EditText TextInputEdit_getNickname_id;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +77,8 @@ public class getNickName extends AppCompatActivity {
                     Intent it = new Intent(getNickName.this,chatActivity.class);
                     it.putExtra("data",data);
                     startActivity(it);
+                    TotalLoginActivity ac = (TotalLoginActivity) TotalLoginActivity.TotalLog;
+                    ac.finish();
                     finish();
                 }
             }
