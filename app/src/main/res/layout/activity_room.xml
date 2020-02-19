@@ -12,6 +12,14 @@ android:weightSum="1">
     android:scrollbars="vertical"
     android:layout_width="match_parent"
     android:layout_height="0dp"
-    android:layout_weight="1"/>
+    android:layout_weight="0.8"/>
+
+    <Button
+        android:id="@+id/Button_Logout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
+        android:text="로그아웃" />
+
 
 </LinearLayout>

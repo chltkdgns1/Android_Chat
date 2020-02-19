@@ -70,7 +70,7 @@ public class getNickName extends AppCompatActivity {
                 String nick = TextInputEdit_getNickname_id.getText().toString();
                 if(!nick.isEmpty()) {
                     data.setUsername(TextInputEdit_getNickname_id.getText().toString());
-                    data.setRoom("room"); data.setToken(token);
+                    data.setToken(token);
                     myRef.child(uid).setValue(data);
 
                     Intent it = new Intent(getNickName.this,roomActivity.class);

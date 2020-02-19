@@ -96,16 +96,6 @@ public class TotalLoginActivity extends AppCompatActivity {
 
         tokens = FirebaseInstanceId.getInstance().getToken();
 
-        //inputToken();
-
-        // 현재 기기의 토큰을 가져옴
-
-        // 토큰은 회원가입 뿐만아니라 로그인 이나 기타 상태에서도
-        // 새로 받아질 수 있다고 가정하고, tokenCollecte 에 갱신하도록 한다.
-        // 단, 이 부분도 룸이 생길 경우에 삭제해야한다.
-
-        // 토큰이 존재하는지 확인하고 없다면 추가한다.
-
         if (user != null) { // 로그인이 되있는 상태라면 바로 룸 창
             final String uid = user.getUid(); // 접속했었던 유아이를 가져옴
             if (uid != null) {
@@ -121,11 +111,11 @@ public class TotalLoginActivity extends AppCompatActivity {
                             myRef.child(uid).setValue(data);  // 갱신한 토큰을 디비에 올려줌
                             startActivity(intent);
                         } else { // 종료한 경우에는 닉네임을 만든다.
-                            LayoutStart();
                             Intent intent = new Intent(TotalLoginActivity.this, getNickName.class);
                             intent.putExtra("uid", uid);
                             intent.putExtra("token", tokens);
                             startActivity(intent);
+                            LayoutStart();
                         }
                     }
 
@@ -185,12 +175,12 @@ public class TotalLoginActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                Log.d("설마여기임?", "1");
+               // Log.d("설마여기임?", "1");
             }
 
             @Override
             public void onError(FacebookException error) {
-                Log.d("설마여기임?", "2");
+               // Log.d("설마여기임?", "2");
             }
         });
     }
@@ -201,20 +191,6 @@ public class TotalLoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 signIn();
-            }
-        });
-
-        findViewById(R.id.signOutButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signOut();
-            }
-        });
-
-        findViewById(R.id.disconnectButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                revokeAccess();
             }
         });
     }
@@ -229,17 +205,17 @@ public class TotalLoginActivity extends AppCompatActivity {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
-                Toast.makeText(getApplicationContext(), "Google sign in success", Toast.LENGTH_LONG).show();
+               // Toast.makeText(getApplicationContext(), "Google sign in success", Toast.LENGTH_LONG).show();
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Toast.makeText(getApplicationContext(), "Google sign in failed", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Google sign in failed", Toast.LENGTH_LONG).show();
                 // ...
             }
         }
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+        // Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -247,9 +223,6 @@ public class TotalLoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            // Toast.makeText(getApplicationContext(), "signInWithCredential:success", Toast.LENGTH_LONG).show();
-
                             FirebaseUser user = mAuth.getCurrentUser();
                             final String uid = user.getUid();
 
@@ -275,13 +248,8 @@ public class TotalLoginActivity extends AppCompatActivity {
 
                                 }
                             });
-
-                            updateUI(user);
                         } else {
-                            // If sign in fails, display a message to the user.
-                            //Toast.makeText(getApplicationContext(), "signInWithCredential:failure", Toast.LENGTH_LONG).show();
 
-                            updateUI(null);
                         }
                     }
                 });
@@ -293,43 +261,9 @@ public class TotalLoginActivity extends AppCompatActivity {
     }
     // [END signin]
 
-    private void signOut() {
-        // Firebase sign out
-        mAuth.signOut();
+    // signOut
 
-        // Google sign out
-        mGoogleSignInClient.signOut().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
-                    }
-                });
-    }
-
-    private void revokeAccess() {
-        // Firebase sign out
-        mAuth.signOut();
-
-        // Google revoke access
-        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
-                    }
-                });
-    }
-
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-            findViewById(R.id.signInButton).setVisibility(View.GONE);
-            findViewById(R.id.signOutAndDisconnect).setVisibility(View.VISIBLE);
-        } else {
-            findViewById(R.id.signInButton).setVisibility(View.VISIBLE);
-            findViewById(R.id.signOutAndDisconnect).setVisibility(View.GONE);
-        }
-    }
+    // revokerAccess
 
     private void handleFacebookAccessToken(AccessToken token) {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
@@ -339,15 +273,8 @@ public class TotalLoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-                            //Toast.makeText(getApplicationContext(),"로그인성공",Toast.LENGTH_LONG).show();
-                            // Sign in success, update UI with the signed-in user's information
-                            // Log.d(TAG, "signInWithCredential:success");
-
                             FirebaseUser user = mAuth.getCurrentUser();
                             final String uid = user.getUid();
-
-                            //myRef.child(uid).setValue("1");
-                            //Toast.makeText(getApplicationContext(),myRef.child("users/" + uid).getKey(),Toast.LENGTH_LONG).show();
 
                             myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override

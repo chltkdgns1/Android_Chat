@@ -2,16 +2,10 @@ package com.gkftndltek.chatingapp;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,6 +34,7 @@ public class roomActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private  List<roomData> roomdataset;
+    private FirebaseAuth mAuth;
     //private SoundPool sp;
     //private int soundid;
     //private AudioManager am;
@@ -45,9 +43,10 @@ public class roomActivity extends AppCompatActivity {
     private long now_time;
     private SimpleDateFormat simpleDate;
 
-    private DatabaseReference myRef,logined;
-    private Userdata userData;
+    private DatabaseReference myRef,logined,myRoom;
 
+    private Userdata userData;
+    private roomData roomdata;
     //private DatabaseReference myUser;
     //private Button Button_send;
     //private ImageView ImageView_send;
@@ -58,7 +57,11 @@ public class roomActivity extends AppCompatActivity {
     //private DatabaseReference isToken;
     private FirebaseDatabase database;
 
-    private FushMessage fushMessage;
+    //private FushMessage fushMessage;
+
+    private String uid;
+
+    private Button Button_logout;
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,26 +73,23 @@ public class roomActivity extends AppCompatActivity {
         Intent it = getIntent();
         Bundle bun = it.getExtras();
         userData = (Userdata) bun.get("data");
-        String uid = (String) bun.get("uid");
+        uid = (String) bun.get("uid");
 
         database = FirebaseDatabase.getInstance();
         logined = database.getReference("logined");
-        myRef = database.getReference("message");
+        myRef = database.getReference("users");
 
+        mAuth = FirebaseAuth.getInstance();
 
         if(uid != null){
             logined.child(uid).setValue("1");
             // 접속 완료된 uid
         }
+
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_room_view);
 
-        //ImageView_send = findViewById(R.id.ImageView_send);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
 
-        // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -97,9 +97,35 @@ public class roomActivity extends AppCompatActivity {
         simpleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         roomdataset = new ArrayList<>();
-        mAdapter = new roomAdapter(roomdataset, roomActivity.this);
+        mAdapter = new roomAdapter(roomdataset, roomActivity.this,uid);
         recyclerView.setAdapter(mAdapter);
 
+        myRoom = database.getReference("room");
+
+        myRef.child(uid).child("room").child("1").setValue("1");
+
+
+        getRoom();
+
+        Button_logout = findViewById(R.id.Button_Logout);
+
+        Button_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+
+                if(isLoggedIn){ // 페이스북에 로그인이 된 경우
+                    LoginManager.getInstance().logOut();
+                    mAuth.signOut();
+                }
+                else mAuth.signOut();
+
+                Intent it = new Intent(roomActivity.this, TotalLoginActivity.class);
+                startActivity(it);
+                finish();
+            }
+        });
         // sp = new SoundPool(5,AudioManager.STREAM_MUSIC,0);
         // soundid = sp.load(this,R.raw.kaotalk,1);
 
@@ -131,13 +157,28 @@ public class roomActivity extends AppCompatActivity {
     }
 
     public void getRoom() {
-        myRef.addChildEventListener(new ChildEventListener() {
+        myRef.child(uid).child("room").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                roomData data = dataSnapshot.getValue(roomData.class);
-                ((roomAdapter) mAdapter).addRoom(data);
+                String rid = dataSnapshot.getKey();
 
+                if(rid != null) {
+                    myRoom.child(rid).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            roomData roomdata = dataSnapshot.getValue(roomData.class);
+                            if (roomdata != null) {
+                                System.out.println("민원기병신민원기병신민원기병신민원기병신민원기병신");
+                                ((roomAdapter) mAdapter).addRoom(roomdata);
+                            }
+                        }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
             }
 
             @Override

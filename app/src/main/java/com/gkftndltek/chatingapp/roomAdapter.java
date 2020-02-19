@@ -1,6 +1,9 @@
 package com.gkftndltek.chatingapp;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,8 +22,8 @@ import java.util.List;
 public class roomAdapter extends RecyclerView.Adapter<roomAdapter.MyViewHolder> {
 
     private  List<roomData> mDataset;
-    private Context con;
-
+    private  static Context con;
+    private String uid;
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -30,6 +33,7 @@ public class roomAdapter extends RecyclerView.Adapter<roomAdapter.MyViewHolder> 
 
         public TextView TextView_roomName,TextView_roomPeople,TextView_roomStory,TextView_roomTime;
         public ImageView ImageView_picture;
+        public LinearLayout LinearLayout_roomLayout;
 
         public MyViewHolder(View v) {
             super(v);
@@ -37,11 +41,14 @@ public class roomAdapter extends RecyclerView.Adapter<roomAdapter.MyViewHolder> 
             TextView_roomPeople = v.findViewById(R.id.TextView_roomPeople);
             TextView_roomStory = v.findViewById(R.id.TextView_roomStory);
             TextView_roomTime = v.findViewById(R.id.TextView_roomTime);
+            LinearLayout_roomLayout = v.findViewById(R.id.LinearLayout_roomLayout);
+
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public roomAdapter(List<roomData> myDataset, Context context) {
+    public roomAdapter(List<roomData> myDataset, Context context,String uid) {
+        this.uid = uid;
         mDataset = myDataset;
         con = context;
         Fresco.initialize(context);
@@ -65,11 +72,23 @@ public class roomAdapter extends RecyclerView.Adapter<roomAdapter.MyViewHolder> 
     public void onBindViewHolder(MyViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        roomData data = mDataset.get(position);
+        final roomData data = mDataset.get(position);
+        holder.LinearLayout_roomLayout.setClickable(true);
         holder.TextView_roomName.setText(data.getRoomName());
-        holder.TextView_roomPeople.setText(data.getNumber());
+        holder.TextView_roomPeople.setText(Integer.toString(data.getNumber()));
         holder.TextView_roomStory.setText(data.getStory());
         holder.TextView_roomTime.setText(data.getTime());
+
+        holder.LinearLayout_roomLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(con,chatActivity.class);
+                it.putExtra("data",data);
+                it.putExtra("uid",uid);
+                con.startActivity(it);
+                System.out.println("시발시발시발시발시발시발시발시발시발시발시발");
+            }
+        });
     }
 
     public void addRoom(roomData data){
