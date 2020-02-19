@@ -8,8 +8,22 @@ public class roomData implements Serializable {
     private int time; // 최근 갱신된 대화 내용의 시간
     private String roomName; // 방 제목
     private String story; // 대화 내용
+    private String message;
+    private int inNumber; // 입장한 사람의 수
     // private String image; 이미지 파일 url 경로???
 
+    public String getMessage() {
+        return message;
+    }
+    public void setMessage(String message) {
+        this.message = message;
+    }
+    public int getInNumber() {
+        return inNumber;
+    }
+    public void setInNumber(int inNumber) {
+        this.inNumber = inNumber;
+    }
     public String getPid() {
         return pid;
     }
@@ -40,5 +54,4 @@ public class roomData implements Serializable {
     public void setStory(String story) {
         this.story = story;
     }
-
 }

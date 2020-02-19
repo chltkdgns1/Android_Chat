@@ -45,7 +45,6 @@ public class getNickName extends AppCompatActivity {
     private LinearLayout LinearLayout_signup_complete;
     private EditText TextInputEdit_getNickname_id;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,11 +73,10 @@ public class getNickName extends AppCompatActivity {
                     data.setRoom("room"); data.setToken(token);
                     myRef.child(uid).setValue(data);
 
-                    Intent it = new Intent(getNickName.this,chatActivity.class);
+                    Intent it = new Intent(getNickName.this,roomActivity.class);
                     it.putExtra("data",data);
+                    it.putExtra("uid",uid);
                     startActivity(it);
-                    TotalLoginActivity ac = (TotalLoginActivity) TotalLoginActivity.TotalLog;
-                    ac.finish();
                     finish();
                 }
             }

@@ -52,7 +52,7 @@ public class roomAdapter extends RecyclerView.Adapter<roomAdapter.MyViewHolder> 
     public roomAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
-              .inflate(R.layout.activity_room, parent, false);
+              .inflate(R.layout.activity_roomdata, parent, false);
 
         //화면 각각 목록의 레이아웃
 

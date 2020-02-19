@@ -1,4 +1,6 @@
 package com.gkftndltek.chatingapp;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -9,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +37,6 @@ public class roomActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private  List<roomData> roomdataset;
-
     //private SoundPool sp;
     //private int soundid;
     //private AudioManager am;
@@ -43,14 +45,17 @@ public class roomActivity extends AppCompatActivity {
     private long now_time;
     private SimpleDateFormat simpleDate;
 
-    private DatabaseReference myRef,myUser;
+    private DatabaseReference myRef,logined;
+    private Userdata userData;
+
+    //private DatabaseReference myUser;
     //private Button Button_send;
     //private ImageView ImageView_send;
 
     //private Userdata userData;
 
-    private List<String> list;
-    private DatabaseReference isToken;
+    //private List<String> list;
+    //private DatabaseReference isToken;
     private FirebaseDatabase database;
 
     private FushMessage fushMessage;
@@ -58,18 +63,25 @@ public class roomActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_room);
 
-
-        //Intent it = getIntent();
-        //Bundle bun = it.getExtras();
-        //userData = (Userdata) bun.get("data");
+        TotalLoginActivity ac = (TotalLoginActivity) TotalLoginActivity.TotalLog;
+        ac.finish();
+        Intent it = getIntent();
+        Bundle bun = it.getExtras();
+        userData = (Userdata) bun.get("data");
+        String uid = (String) bun.get("uid");
 
         database = FirebaseDatabase.getInstance();
-        myUser =database.getReference("users");
+        logined = database.getReference("logined");
         myRef = database.getReference("message");
 
-        recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+
+        if(uid != null){
+            logined.child(uid).setValue("1");
+            // 접속 완료된 uid
+        }
+        recyclerView = (RecyclerView) findViewById(R.id.my_recycler_room_view);
 
         //ImageView_send = findViewById(R.id.ImageView_send);
 
@@ -85,16 +97,71 @@ public class roomActivity extends AppCompatActivity {
         simpleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         roomdataset = new ArrayList<>();
-        mAdapter = new roomAdapter(roomdataset,roomActivity.this);
+        mAdapter = new roomAdapter(roomdataset, roomActivity.this);
         recyclerView.setAdapter(mAdapter);
 
-       // sp = new SoundPool(5,AudioManager.STREAM_MUSIC,0);
-       // soundid = sp.load(this,R.raw.kaotalk,1);
+        // sp = new SoundPool(5,AudioManager.STREAM_MUSIC,0);
+        // soundid = sp.load(this,R.raw.kaotalk,1);
 
-        fushMessage = new FushMessage();
-        isToken = database.getReference("Tokens"); // 토큰들의 집합
+        //fushMessage = new FushMessage();
 
-       // getChat(); // 맨 처음에 그냥 대회 내용을 가져옴
+       //isToken = database.getReference("Tokens"); // 토큰들의 집합
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder alert_ex = new AlertDialog.Builder(this);
+        alert_ex.setMessage("정말로 종료하시겠습니까?");
+
+        alert_ex.setPositiveButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        alert_ex.setNegativeButton("종료", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finishAffinity();
+            }
+        });
+        alert_ex.setTitle("예제어플 알림!");
+        AlertDialog alert = alert_ex.create();
+        alert.show();
+    }
+
+    public void getRoom() {
+        myRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                roomData data = dataSnapshot.getValue(roomData.class);
+                ((roomAdapter) mAdapter).addRoom(data);
+
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+        // getChat(); // 맨 처음에 그냥 대회 내용을 가져옴
 
 
 
@@ -165,43 +232,4 @@ public class roomActivity extends AppCompatActivity {
             }
         });
          */
-    }
-
-    /*
-    public void getChat() {
-        myRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                chatdata chat = dataSnapshot.getValue(chatdata.class);
-                ((chatAdapter) mAdapter).addChat(chat);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        recyclerView.scrollToPosition(mAdapter.getItemCount()-1);
-                    }
-                }, 200);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-     */
 }

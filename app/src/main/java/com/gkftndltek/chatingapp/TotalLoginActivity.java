@@ -1,6 +1,8 @@
 package com.gkftndltek.chatingapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -58,7 +60,9 @@ public class TotalLoginActivity extends AppCompatActivity {
 
     private LoginButton loginButton; // 페이스북에서 제공하는 로그인 버트
 
-    private DatabaseReference myRef, getUsers, isToken;
+    private DatabaseReference myRef,logined;
+
+     // private DatabaseReference getUsers, isToken;
     // 여기서 getUsers 는 주요 로그인 외의 uid 를 저장하는 수를 가져오기 위해 사용됨
     // 세번째 isToken 은 토큰이 존재하는지 확인하고 존재하지 않는다면 추가하는 기능
 
@@ -81,7 +85,6 @@ public class TotalLoginActivity extends AppCompatActivity {
         //boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
         TotalLog = TotalLoginActivity.this;
-
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         mCallbackManager = CallbackManager.Factory.create();
@@ -89,7 +92,7 @@ public class TotalLoginActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
 
         myRef = database.getReference("users");
-        isToken = database.getReference("Tokens"); // 토큰들의 집합
+        //isToken = database.getReference("Tokens"); // 토큰들의 집합
 
         tokens = FirebaseInstanceId.getInstance().getToken();
 
@@ -103,21 +106,21 @@ public class TotalLoginActivity extends AppCompatActivity {
 
         // 토큰이 존재하는지 확인하고 없다면 추가한다.
 
-        if (user != null) { // 로그인이 되있는 상태라면 바로 메시지 창으로 넘아감
+        if (user != null) { // 로그인이 되있는 상태라면 바로 룸 창
             final String uid = user.getUid(); // 접속했었던 유아이를 가져옴
             if (uid != null) {
                 myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Userdata data = dataSnapshot.getValue(Userdata.class);
-                        if (data != null) {
+                        if (data != null) {  // 접속은 했었지만 닉네임을 만들지 않고 종료하지 않은 경우
                             data.setToken(tokens); // 새로 받은 토큰을 갱신해주고
-                            Intent intent = new Intent(TotalLoginActivity.this, chatActivity.class);
+                            Intent intent = new Intent(TotalLoginActivity.this, roomActivity.class);
                             intent.putExtra("data", data);
+                            intent.putExtra("uid",uid);
                             myRef.child(uid).setValue(data);  // 갱신한 토큰을 디비에 올려줌
                             startActivity(intent);
-                            finish();
-                        } else {
+                        } else { // 종료한 경우에는 닉네임을 만든다.
                             LayoutStart();
                             Intent intent = new Intent(TotalLoginActivity.this, getNickName.class);
                             intent.putExtra("uid", uid);
@@ -133,7 +136,32 @@ public class TotalLoginActivity extends AppCompatActivity {
                 });
             }
         }
-        else LayoutStart();
+        else {
+            LayoutStart();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder alert_ex = new AlertDialog.Builder(this);
+        alert_ex.setMessage("정말로 종료하시겠습니까?");
+
+        alert_ex.setPositiveButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        alert_ex.setNegativeButton("종료", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finishAffinity();
+            }
+        });
+        alert_ex.setTitle("예제어플 알림!");
+        AlertDialog alert = alert_ex.create();
+        alert.show();
     }
 
     private void LayoutStart(){
@@ -235,8 +263,9 @@ public class TotalLoginActivity extends AppCompatActivity {
                                         intent.putExtra("token", tokens);
                                         startActivity(intent);
                                     } else {
-                                        Intent intent = new Intent(TotalLoginActivity.this, chatActivity.class);
+                                        Intent intent = new Intent(TotalLoginActivity.this, roomActivity.class);
                                         intent.putExtra("data", data);
+                                        intent.putExtra("uid",uid);
                                         startActivity(intent);
                                     }
                                 }
@@ -330,8 +359,9 @@ public class TotalLoginActivity extends AppCompatActivity {
                                         intent.putExtra("token", tokens);
                                         startActivity(intent);
                                     } else {
-                                        Intent intent = new Intent(TotalLoginActivity.this, chatActivity.class);
+                                        Intent intent = new Intent(TotalLoginActivity.this, roomActivity.class);
                                         intent.putExtra("data", data);
+                                        intent.putExtra("uid",uid);
                                         startActivity(intent);
                                     }
                                 }
