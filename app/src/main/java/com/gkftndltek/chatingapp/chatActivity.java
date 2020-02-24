@@ -71,36 +71,19 @@ public class chatActivity extends AppCompatActivity {
     private Handler handlerPushMessage = new Handler(){
         @Override
         public void handleMessage(Message msg){
-            if(msg.what == 1){ // 그거 찾아야함 머시냐 현재 들어온 리스트에는
-                System.out.println("씨Fire 들어왔냐?1111111111");
-                final ThreadCommuicationData data = (ThreadCommuicationData)msg.obj;
-
-                new Thread() {
-                    public void run() {
-                        try {
-                            fushMessage.pushNotification(data.getData(),data.getTokne());
-                        } catch (Exception e) {
-
-                        }
-                    }
-                }.start();
-            }
-            else if(msg.what == 2){
+            if(msg.what == 2){
                 String uid = msg.obj.toString();
-                System.out.println("씨발 유아이디가 이상한 건가 왜 똑같은게 2개 나옴 시발 " + uid);
                 myUser.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Userdata usd = dataSnapshot.getValue(Userdata.class);
                         String token = usd.getToken();
-
-                        System.out.println("토큰이 제대로 안들어가는 거 같은데 하나가 빠짐;;; 시발 " + token);
                         Message msg = Message.obtain();
                         msg.what = 1;
                         ThreadCommuicationData cdata = new ThreadCommuicationData();
                         cdata.setData(data); cdata.setTokne(token);
                         msg.obj = cdata;
-                        handlerPushMessage.sendMessage(msg);
+                        fushMessage.handler.sendMessage(msg);
                     }
 
                     @Override
@@ -126,6 +109,16 @@ public class chatActivity extends AppCompatActivity {
 
         myUser = database.getReference("users");
         myRoom = database.getReference("room");
+
+        new Thread() {
+            public void run() {
+                try {
+                    fushMessage.pushNotification();
+                } catch (Exception e) {
+                    System.out.println("설마 마사카 일로 들어옴?");
+                }
+            }
+        }.start();
 
         init(); // 초기화 해주는 함수
         EditTextTouch();  // 에딧텍스가 눌렸을 경우 (스크롤이 맨 아래로 내려감)
@@ -180,7 +173,6 @@ public class chatActivity extends AppCompatActivity {
                                 String key = snapData.getKey();
                                 Message msg = Message.obtain();
                                 msg.what = 2; msg.obj = key;
-                                System.out.println("키키키키키키키 : " + key);
                                 handlerPushMessage.sendMessage(msg);
                             }
                         }

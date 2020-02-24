@@ -239,6 +239,7 @@ public class TotalLoginActivity extends AppCompatActivity {
                                         Intent intent = new Intent(TotalLoginActivity.this, roomActivity.class);
                                         intent.putExtra("data", data);
                                         intent.putExtra("uid",uid);
+                                        myRef.child(uid).child("token").setValue(tokens);
                                         startActivity(intent);
                                     }
                                 }
@@ -289,6 +290,7 @@ public class TotalLoginActivity extends AppCompatActivity {
                                         Intent intent = new Intent(TotalLoginActivity.this, roomActivity.class);
                                         intent.putExtra("data", data);
                                         intent.putExtra("uid",uid);
+                                        myRef.child(uid).child("token").setValue(tokens);
                                         startActivity(intent);
                                     }
                                 }
