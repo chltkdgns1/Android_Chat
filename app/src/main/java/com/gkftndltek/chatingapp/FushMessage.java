@@ -3,7 +3,6 @@ package com.gkftndltek.chatingapp;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -35,11 +34,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class FushMessage {
-
     private final String AUTH_KEY_FCM = "AAAATZUFEW4:APA91bHpJpMQTh8BC8YpTedpBk2ghc6c3hQxuN9hSeYFbnCYKjEhvHY2cgFNkHMJCVETbuJ0WnVb0jtK-KpqyNPRG_aGWgoV20_IPWh5HMXZ0pHMW4hjNfi09eiFIMNVH4QgdrzC_nSI";
     private final String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
 
-    private String userDeviceIdKey = "eHyQ2ytsWvw:APA91bFajOnkMQbc5P25Qtb5N6vOvYwS57fZamHAOUwilN8jtGLWZfzXckWjClGPI6mBUDHGBgsOJZUuX9J_uB5aFJBvC8QXr5S4bTHeQy3SSuenUMq2ISJc0_YGyZo5I843CPLtXSrD";
+    private String userDeviceIdKey = "cYBYj-HEFoc:APA91bHYBPaQd4IZ6R4JszYpIvMVaaFsptlDyn3SAOWu43mPlogqDi8TKKNM0avmWO38zzCEWJWm1RNvSpuSDeib7CSEkBWsMOUvsHVmNOc4kIRpVW0O1ZnAqSoPibjujCJ4e7JNEuOM";
     private OutputStreamWriter wr;
     private BufferedReader br;
     private HttpURLConnection conn;
@@ -51,10 +49,8 @@ public class FushMessage {
     private JSONObject info;
     private chatdata data;
 
-    static public Handler handler;
-
-
-    public void pushNotification() throws Exception {
+    public synchronized void pushNotification(chatdata data, String token ) throws Exception {
+        this.data = data;
         URL url = new URL(API_URL_FCM);
         conn = (HttpURLConnection) url.openConnection();
         conn.setUseCaches(false);
@@ -63,24 +59,22 @@ public class FushMessage {
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setRequestProperty("Authorization", "key=" + AUTH_KEY_FCM);
+
         //알림 + 데이터 메세지 형태의 전달
+        json = new JSONObject();
+        info = new JSONObject();
 
         // database = FirebaseDatabase.getInstance();
         // isToken = database.getReference("Tokens"); // 토큰들의 집합
 
+        info.put("title", "메시지왔어요!");
+        info.put("body", data.getNickname() + " : " + data.getMessage()); // Notification body
+        info.put("sound", "default");
+        json.put("notification", info);
+        json.put("to", token);
 
         //System.out.println("잘 보내지긴하는데 토큰은 정상임? " + token);
 
-
-        wr = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                System.out.println("dsadasada");
-            }
-        };
-    }
-        /*
         try{
             wr = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
             wr.write(json.toString());
@@ -103,20 +97,18 @@ public class FushMessage {
             while ((output = br.readLine()) != null) {
                 System.out.println(output);
             }
-            //200 + error 는 재전송 등등의 로직
         }
     }
-    */
 
-    private void connFinish() {
-        if (br != null) {
+    private void connFinish(){
+        if(br != null){
             try {
                 br.close();
                 br = null;
             } catch (IOException e) {
             }
         }
-        if (wr != null) {
+        if(wr != null){
             try {
                 wr.close();
                 wr = null;
@@ -124,7 +116,7 @@ public class FushMessage {
             }
 
         }
-        if (conn != null) {
+        if(conn != null){
             conn.disconnect();
             conn = null;
         }
