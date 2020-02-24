@@ -5,6 +5,8 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,10 +68,55 @@ public class chatActivity extends AppCompatActivity {
     private FushMessage fushMessage;
     private String uid;
 
+    private Handler handlerPushMessage = new Handler(){
+        @Override
+        public void handleMessage(Message msg){
+            if(msg.what == 1){ // 그거 찾아야함 머시냐 현재 들어온 리스트에는
+                System.out.println("씨Fire 들어왔냐?1111111111");
+                final ThreadCommuicationData data = (ThreadCommuicationData)msg.obj;
+
+                new Thread() {
+                    public void run() {
+                        try {
+                            fushMessage.pushNotification(data.getData(),data.getTokne());
+                        } catch (Exception e) {
+
+                        }
+                    }
+                }.start();
+            }
+            else if(msg.what == 2){
+                String uid = msg.obj.toString();
+                System.out.println("씨발 유아이디가 이상한 건가 왜 똑같은게 2개 나옴 시발 " + uid);
+                myUser.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Userdata usd = dataSnapshot.getValue(Userdata.class);
+                        String token = usd.getToken();
+
+                        System.out.println("토큰이 제대로 안들어가는 거 같은데 하나가 빠짐;;; 시발 " + token);
+                        Message msg = Message.obtain();
+                        msg.what = 1;
+                        ThreadCommuicationData cdata = new ThreadCommuicationData();
+                        cdata.setData(data); cdata.setTokne(token);
+                        msg.obj = cdata;
+                        handlerPushMessage.sendMessage(msg);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
         Intent it = getIntent();
         Bundle bun = it.getExtras();
         roomdata = (roomData) bun.get("data");
@@ -128,45 +176,13 @@ public class chatActivity extends AppCompatActivity {
                     myRoom.child(roomdata.getRid()).child("uids").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            int cnt = 0;
-                            list = new ArrayList<>();
                             for (DataSnapshot snapData : dataSnapshot.getChildren()) {
                                 String key = snapData.getKey();
-                                cnt++;
-                                if (key != null) {
-                                    myUser.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            Userdata usd = dataSnapshot.getValue(Userdata.class);
-                                            String token = usd.getToken();
-                                            list.add(token);
-                                            System.out.println("사이즈 몇이냐 : " + list.size());
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-                                    while(list.size() != cnt);
-                                    System.out.println("사이즈사이즈 정말 시발 제발; " + list.size());
-                                }
+                                Message msg = Message.obtain();
+                                msg.what = 2; msg.obj = key;
+                                System.out.println("키키키키키키키 : " + key);
+                                handlerPushMessage.sendMessage(msg);
                             }
-
-
-
-                            new Thread() {
-                                public void run() {
-                                    try {
-                                        for(int i=0;i<list.size();i++) {
-                                            System.out.println("아 제발 그러지마");
-                                            fushMessage.pushNotification(data, list.get(i));
-                                        }
-                                    } catch (Exception e) {
-
-                                    }
-                                }
-                            }.start();
                         }
 
                         @Override

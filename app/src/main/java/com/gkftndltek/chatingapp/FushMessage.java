@@ -72,9 +72,12 @@ public class FushMessage {
         json.put("notification", info);
         json.put("to", token );
 
+        System.out.println("잘 보내지긴하는데 토큰은 정상임? " + token);
+
         try{
             wr = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
             wr.write(json.toString());
+           // System.out.println("잘 보내짐?");
             wr.flush();
         }catch(Exception e){
             connFinish();
