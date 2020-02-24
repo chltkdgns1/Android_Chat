@@ -71,16 +71,16 @@ public class chatActivity extends AppCompatActivity {
     private Handler handlerPushMessage = new Handler(){
         @Override
         public void handleMessage(Message msg){
-            if(msg.what == 1){
-                ThreadCommuicationData data = (ThreadCommuicationData)msg.obj;
+            if(msg.what == 1) {
+                ThreadCommuicationData data = (ThreadCommuicationData) msg.obj;
                 final chatdata chat = data.getData();
                 final String token = data.getTokne();
                 new Thread() {
                     public void run() {
                         try {
-                            fushMessage.pushNotification(chat,token);
+                            fushMessage.pushNotification(chat, token);
                         } catch (Exception e) {
-                            
+
                         }
                     }
                 }.start();
@@ -175,9 +175,12 @@ public class chatActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             for (DataSnapshot snapData : dataSnapshot.getChildren()) {
                                 String key = snapData.getKey();
-                                Message msg = Message.obtain();
-                                msg.what = 2; msg.obj = key;
-                                handlerPushMessage.sendMessage(msg);
+                                if(!key.equals(uid)) {
+                                    Message msg = Message.obtain();
+                                    msg.what = 2;
+                                    msg.obj = key;
+                                    handlerPushMessage.sendMessage(msg);
+                                }
                             }
                         }
 

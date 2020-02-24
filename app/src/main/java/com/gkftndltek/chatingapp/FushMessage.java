@@ -78,7 +78,6 @@ public class FushMessage {
         try{
             wr = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
             wr.write(json.toString());
-            System.out.println("잘 보내짐?");
             wr.flush();
         }catch(Exception e){
             connFinish();
