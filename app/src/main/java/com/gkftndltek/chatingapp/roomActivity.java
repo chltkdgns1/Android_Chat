@@ -1,15 +1,19 @@
 package com.gkftndltek.chatingapp;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,7 +37,7 @@ public class roomActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    private  List<roomData> roomdataset;
+    private List<roomData> roomdataset;
     private FirebaseAuth mAuth;
     //private SoundPool sp;
     //private int soundid;
@@ -43,7 +47,7 @@ public class roomActivity extends AppCompatActivity {
     private long now_time;
     private SimpleDateFormat simpleDate;
 
-    private DatabaseReference myRef,logined,myRoom;
+    private DatabaseReference myRef, logined, myRoom;
 
     private Userdata userData;
     private roomData roomdata;
@@ -62,11 +66,19 @@ public class roomActivity extends AppCompatActivity {
     private String uid;
 
     private Button Button_logout;
+    private Toolbar toolbar; // 툴바
+
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
+
+        //룸 메뉴
+        // 툴바
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("채팅");
+        setSupportActionBar(toolbar);
 
         TotalLoginActivity ac = (TotalLoginActivity) TotalLoginActivity.TotalLog;
         ac.finish();
@@ -81,7 +93,7 @@ public class roomActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        if(uid != null){
+        if (uid != null) {
             logined.child(uid).setValue("1");
             // 접속 완료된 uid
         }
@@ -97,42 +109,49 @@ public class roomActivity extends AppCompatActivity {
         simpleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         roomdataset = new ArrayList<>();
-        mAdapter = new roomAdapter(roomdataset, roomActivity.this,uid);
+        mAdapter = new roomAdapter(roomdataset, roomActivity.this, uid);
         recyclerView.setAdapter(mAdapter);
 
         myRoom = database.getReference("room");
 
         myRef.child(uid).child("room").child("1").setValue("1");
-
-
         getRoom();
+    }
 
-        Button_logout = findViewById(R.id.Button_Logout);
-
-        Button_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+                return true;
+            case R.id.logout:
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
                 boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
-                if(isLoggedIn){ // 페이스북에 로그인이 된 경우
+                if (isLoggedIn) { // 페이스북에 로그인이 된 경우
                     LoginManager.getInstance().logOut();
                     mAuth.signOut();
-                }
-                else mAuth.signOut();
+                } else mAuth.signOut();
 
                 Intent it = new Intent(roomActivity.this, TotalLoginActivity.class);
                 startActivity(it);
                 finish();
-            }
-        });
-        // sp = new SoundPool(5,AudioManager.STREAM_MUSIC,0);
-        // soundid = sp.load(this,R.raw.kaotalk,1);
-
-        //fushMessage = new FushMessage();
-
-       //isToken = database.getReference("Tokens"); // 토큰들의 집합
+                return true;
+            case R.id.menu_make_friend:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
+
+
+    // 메뉴 시작
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.room_menu, menu);
+        return true;
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -162,7 +181,7 @@ public class roomActivity extends AppCompatActivity {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 String rid = dataSnapshot.getKey();
 
-                if(rid != null) {
+                if (rid != null) {
                     myRoom.child(rid).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -202,7 +221,7 @@ public class roomActivity extends AppCompatActivity {
             }
         });
     }
-        // getChat(); // 맨 처음에 그냥 대회 내용을 가져옴
+    // getChat(); // 맨 처음에 그냥 대회 내용을 가져옴
 
 
 

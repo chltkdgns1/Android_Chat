@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.gkftndltek.toolbar_basic_activity.MainActivity">
+
+    <item
+        android:id="@+id/menu_make_friend"
+        android:orderInCategory="100"
+        android:title="친구추가"
+        android:icon = "@drawable/iconfinder_searchicon64"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/settings"
+        android:title="설정"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/logout"
+        android:title="로그아웃"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+</menu>
